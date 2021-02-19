@@ -1,10 +1,12 @@
 package com.SCM.Controller;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,7 +55,7 @@ public class HomeController {
 	
 	
 	@RequestMapping(value = "/do_register",method= RequestMethod.POST)
-	public String registerUser( @ModelAttribute("user") User user,@RequestParam(value = "agreement",defaultValue = "false")boolean agreement,Model model,HttpSession session)
+	public String registerUser(@Valid @ModelAttribute("user") User user,BindingResult result1,@RequestParam(value = "agreement",defaultValue = "false")boolean agreement,Model model,HttpSession session)
 	{
 		
 		try {
@@ -64,7 +66,12 @@ public class HomeController {
 				throw new Exception("You have not agree the terms and condition");
 			}
 			
-			
+			if(result1.hasErrors())
+			{
+				System.out.println("Errors "+result1.toString());
+				model.addAttribute("user", user);
+				return "signup";
+			}
 			
 			
 			user.setRole("ROLE_USER");
